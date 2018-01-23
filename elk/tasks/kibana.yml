@@ -1,0 +1,21 @@
+---
+
+- name: Creating yum repository for Elasticsearch
+  yumrepo:
+    name: kibana
+    baseurl: https://artifacts.elastic.co/downloads/kibana/kibana-6.0.0-x86_64.rpm
+    gpgcheck: no
+    gpgkey: http://packages.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Copy Kibana repo
+  template: 
+    src=kibana.repo.j2 dest=/etc/yum.repos.d/kibana.repo
+
+- name: Install Kibana
+  yum: name=kibana state=installed
+
+- name: Restrict hosts
+  lineinfile: 'dest=/opt/kibana/config/kibana.yml regexp=server.host line="server.host: localhost"'
+  notify: Restart kibana
+  
